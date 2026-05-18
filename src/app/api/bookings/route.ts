@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
 // Max capacity per 30-min slot
 const MAX_CAPACITY = 20;
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { name, email, phone, date, time, guests, notes } = body;
@@ -15,7 +15,6 @@ export async function POST(request: Request) {
     }
 
     // 2. Capacity Check
-    // Convert date string to Date object
     const bookingDate = new Date(date);
     
     const existingBookings = await prisma.booking.findMany({
@@ -50,8 +49,6 @@ export async function POST(request: Request) {
         notes,
       }
     });
-
-    // 4. (Optional) Send Email Notification here
 
     return NextResponse.json(booking, { status: 201 });
   } catch (error: any) {
